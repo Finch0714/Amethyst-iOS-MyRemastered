@@ -149,9 +149,6 @@ static UIInterfaceOrientation current_interface_orientation(void) {
                 break;
             }
         }
-        if (result == UIInterfaceOrientationUnknown) {
-            result = UIApplication.sharedApplication.statusBarOrientation;
-        }
     };
     // Camera setup runs on a background queue, while UIApplication scene
     // properties are main-thread-only. Read them on the main thread.
@@ -342,7 +339,7 @@ static void begin_capture(CameraCtx *ctx) {
         .width = (vImagePixelCount)ctx->width,
         .rowBytes = (size_t)ctx->width * 4U
     };
-    vImage_Error scaleError = vImageScale_ARGB8888(&source, &destination, kvImageNoFlags);
+    vImage_Error scaleError = vImageScale_ARGB8888(&source, &destination, NULL, kvImageNoFlags);
     CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
     if (scaleError != kvImageNoError) {
         return;
