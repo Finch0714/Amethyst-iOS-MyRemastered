@@ -274,6 +274,19 @@ add_library(AmethystAccountJNI SHARED
 )
 target_link_libraries(AmethystAccountJNI)
 
+  # Camera capture JNI bridge (Camera Background Mod support)
+  add_library(camera_capture SHARED
+    camera_capture_bridge.m
+  )
+  target_link_libraries(camera_capture
+    "-framework Foundation"
+    "-framework AVFoundation"
+    "-framework CoreMedia"
+    "-framework CoreVideo"
+    "-framework Accelerate"
+    "-framework UIKit"
+  )
+
 # Audio capture JNI bridge (SimpleVoiceChat Mod support)
 add_library(audio_capture SHARED
   audio_capture_bridge.m

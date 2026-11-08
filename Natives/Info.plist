@@ -254,5 +254,7 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Air uses the camera to show the live camera background behind the Minecraft main menu.</string>
 </dict>
 </plist>
