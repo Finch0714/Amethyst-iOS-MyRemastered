@@ -45,9 +45,9 @@ jobs:
         run: |
           set -e
           tag="camera-bg-1.0.0-ios"
-          gh release delete "$tag" --yes --cleanup-tag || true
+          gh release delete "$tag" --repo Finch0714/Amethyst-iOS-MyRemastered --yes --cleanup-tag || true
           FILES=$(find artifacts -type f \( -name '*.ipa' -o -name '*.tipa' \))
           echo "$FILES"
-          gh release create "$tag" $FILES \
+          gh release create "$tag" --repo Finch0714/Amethyst-iOS-MyRemastered $FILES \
             --title "Camera Background iOS test (Amethyst 6.0.0 + camera bridge)" \
             --notes "Unsigned Amethyst IPA with the camera_capture native bridge and NSCameraUsageDescription. Install with TrollStore (.tipa) or self-sign the .ipa. Put camera-background-1.0.0.jar + Fabric API in the instance mods folder. Minecraft 1.21.1 / Fabric."
