@@ -196,8 +196,8 @@ jobs:
         # 公开 Release 里的 java_runtimes，避免依赖该域名。
         run: |
           set -euo pipefail
-          mkdir -p Natives/depends
-          if [ ! -f Natives/depends/java-21-openjdk/lib/server/libjvm.dylib ]; then
+          mkdir -p depends
+          if [ ! -f depends/java-21-openjdk/lib/server/libjvm.dylib ]; then
             curl -fL --retry 5 --retry-delay 5 --connect-timeout 30 \
               -o /tmp/amethyst-jre.ipa \
               https://github.com/herbrine8403/Amethyst-iOS-MyRemastered/releases/download/5.1.0/Air-5.1.0.ipa
@@ -209,17 +209,17 @@ jobs:
             ls "$APP/java_runtimes" || true
             for v in 8 17 21 25; do
               if [ -d "$APP/java_runtimes/java-$v-openjdk" ]; then
-                rm -rf "Natives/depends/java-$v-openjdk"
-                cp -R "$APP/java_runtimes/java-$v-openjdk" Natives/depends/
+                rm -rf "depends/java-$v-openjdk"
+                cp -R "$APP/java_runtimes/java-$v-openjdk" depends/
                 echo "[ci] restored java-$v-openjdk"
               fi
             done
-            if [ ! -d Natives/depends/java-21-openjdk ]; then
+            if [ ! -d depends/java-21-openjdk ]; then
               echo "[ci] ERROR: release IPA has no java-21 runtime"; exit 1
             fi
             for v in 8 17 25; do
-              if [ ! -d "Natives/depends/java-$v-openjdk" ]; then
-                cp -R Natives/depends/java-21-openjdk "Natives/depends/java-$v-openjdk"
+              if [ ! -d "depends/java-$v-openjdk" ]; then
+                cp -R depends/java-21-openjdk "depends/java-$v-openjdk"
                 echo "[ci] WARN: java-$v missing in release; cloned java-21 (target 1.21.1 uses Java 21)"
               fi
             done
@@ -227,7 +227,7 @@ jobs:
             rm -rf /tmp/amethyst-jre
           fi
           for v in 8 17 21 25; do
-            test -f "Natives/depends/java-$v-openjdk/lib/server/libjvm.dylib"
+            test -f "depends/java-$v-openjdk/lib/server/libjvm.dylib"
             echo "[ci] java-$v runtime OK"
           done
       - name: Build for ${{ matrix.platform_name }}
