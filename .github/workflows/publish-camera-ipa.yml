@@ -1,0 +1,53 @@
+name: Publish Camera IPA
+
+on:
+  push:
+    paths:
+      - '.github/workflows/publish-camera-ipa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download built IPA artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: 'com.air-devs.air-ios*'
+          path: artifacts
+          run-id: 42454360593
+          repository: Finch0714/Amethyst-iOS-MyRemastered
+          github-token: ${{ github.token }}
+
+      - name: Verify camera bridge is inside the IPA
+        run: |
+          set -e
+          find artifacts -type f -maxdepth 3 -printf '%p %s bytes\n'
+          IPA=$(find artifacts -name '*.ipa' | head -1)
+          test -n "$IPA"
+          rm -rf verify && mkdir -p verify
+          unzip -q "$IPA" -d verify
+          APP=$(find verify/Payload -maxdepth 1 -name '*.app' -type d | head -1)
+          echo "APP=$APP"
+          test -f "$APP/Frameworks/libcamera_capture.dylib"
+          ls -l "$APP/Frameworks/libcamera_capture.dylib"
+          unzip -l "$APP/libs/launcher.jar" | grep 'com/apple/ios/camera/NativeCameraCapture.class'
+          /usr/libexec/PlistBuddy -c 'Print :NSCameraUsageDescription' "$APP/Info.plist"
+          echo 'CAMERA BRIDGE VERIFIED'
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          tag="camera-bg-1.0.0-ios"
+          gh release delete "$tag" --yes --cleanup-tag || true
+          FILES=$(find artifacts -type f \( -name '*.ipa' -o -name '*.tipa' \))
+          echo "$FILES"
+          gh release create "$tag" $FILES \
+            --title "Camera Background iOS test (Amethyst 6.0.0 + camera bridge)" \
+            --notes "Unsigned Amethyst IPA with the camera_capture native bridge and NSCameraUsageDescription. Install with TrollStore (.tipa) or self-sign the .ipa. Put camera-background-1.0.0.jar + Fabric API in the instance mods folder. Minecraft 1.21.1 / Fabric."
