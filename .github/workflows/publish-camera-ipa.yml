@@ -36,7 +36,7 @@ jobs:
           test -f "$APP/Frameworks/libcamera_capture.dylib"
           ls -l "$APP/Frameworks/libcamera_capture.dylib"
           unzip -l "$APP/libs/launcher.jar" | grep 'com/apple/ios/camera/NativeCameraCapture.class'
-          /usr/libexec/PlistBuddy -c 'Print :NSCameraUsageDescription' "$APP/Info.plist"
+          python3 -c "import plistlib,sys; d=plistlib.load(open(sys.argv[1],'rb')); assert d.get('NSCameraUsageDescription'); print(d['NSCameraUsageDescription'])" "$APP/Info.plist"
           echo 'CAMERA BRIDGE VERIFIED'
 
       - name: Publish release
