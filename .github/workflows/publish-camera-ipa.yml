@@ -27,7 +27,7 @@ jobs:
         run: |
           set -e
           find artifacts -type f -maxdepth 3 -printf '%p %s bytes\n'
-          IPA=$(find artifacts -name '*.ipa' | head -1)
+          IPA=$(find artifacts -type f -name '*.ipa' | head -1)
           test -n "$IPA"
           rm -rf verify && mkdir -p verify
           unzip -q "$IPA" -d verify
